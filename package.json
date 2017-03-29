@@ -10,9 +10,11 @@
     "socket.io": "^1.7.3"
   },
   "scripts": {
-    "start": "nodemon server/index.js"
+    "build": "babel client -d build",
+    "start": "babel client -d build && nodemon server/index.js"
   },
   "devDependencies": {
+    "babel-cli": "^6.24.0",
     "nodemon": "^1.11.0"
   }
 }

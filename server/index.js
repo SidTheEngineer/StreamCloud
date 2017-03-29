@@ -8,10 +8,7 @@ const PORT    = process.env.PORT || 3000;
 
 app.use(express.static(path.join(__dirname, '../client/')));
 
-// io.on('connection', (e) => {
-//   console.log(e);
-// });
-
+// Initial search page.
 app.get('/', (req, res) => {
   res.sendFile(path.join(__dirname, '../client/', 'index.html'));
 });
