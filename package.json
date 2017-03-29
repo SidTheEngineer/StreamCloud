@@ -1,0 +1,12 @@
+{
+  "name": "stream-cloud",
+  "version": "1.0.0",
+  "description": "SoundCloud with friends",
+  "main": "index.js",
+  "author": "StreamCloud",
+  "license": "MIT",
+  "dependencies": {
+    "express": "^4.15.2",
+    "socket.io": "^1.7.3"
+  }
+}
