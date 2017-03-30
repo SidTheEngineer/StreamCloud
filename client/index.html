@@ -2,12 +2,24 @@
 <html lang="en">
   <head>
     <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1, maximum-scale=1">
     <link rel="stylesheet" type="text/css" href="style.css">
     <title>StreamCloud</title>
   </head>
   <body>
-    <h1>Hello <strong>StreamCloud</strong></h1>
-    <script type="text/javascript" src="app.js"></script>
+    <div class="app-container">
+      <div id="titleContainer" class="title-container">
+        <h1>Stream<strong>Cloud</strong></h1>
+      </div>
+      <div id="searchContainer" class="search-container">
+        <input id="searchBox" type="text" name="track">
+        <input id="submitSearch" type="submit" value="Search Tracks">
+      </div>
+      <div id="trackContainer" class="track-container">
+
+      </div>
+    </div>
+    <script src="https://connect.soundcloud.com/sdk/sdk-3.1.2.js"></script>
+    <script type="text/javascript" src="bundle.js"></script>
   </body>
 </html>

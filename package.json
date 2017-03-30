@@ -7,14 +7,21 @@
   "license": "MIT",
   "dependencies": {
     "express": "^4.15.2",
-    "socket.io": "^1.7.3"
+    "socket.io": "^1.7.3",
+    "soundcloud": "^3.1.2"
   },
   "scripts": {
-    "build": "babel client -d build",
-    "start": "babel client -d build && nodemon server/index.js"
+    "build": "webpack",
+    "start": "concurrently \"webpack --watch\" \"nodemon server/index.js\""
   },
   "devDependencies": {
     "babel-cli": "^6.24.0",
-    "nodemon": "^1.11.0"
+    "babel-core": "^6.24.0",
+    "babel-loader": "^6.4.1",
+    "babel-polyfill": "^6.23.0",
+    "babel-preset-env": "^1.2.2",
+    "concurrently": "^3.4.0",
+    "nodemon": "^1.11.0",
+    "webpack": "^2.3.2"
   }
 }

@@ -3,8 +3,5 @@
   "watch": [
     "client/",
     "server/"
-  ],
-  "events": {
-    "restart": "osascript -e 'display notification \"app restarted\" with title \"nodemon\"'"
-  }
+  ]
 }
