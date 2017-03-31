@@ -1,13 +1,12 @@
+import StreamCloud from '../StreamCloud';
+
 class TrackItem {
   constructor(details) {
-    this.details    = details;
-    this.handlePlay = this.handlePlay.bind(this);
-    this.playButton = document.createElement("div")
-
+    this.details                = details;
+    this.playButton             = document.createElement("div");
     this.playButton.id          = 'play';
-    this.playButton.className   = 'play-button';
-    this.playButton.onclick     = this.handlePlay;
-    this.playButton.dataset.url = details.stream_url;
+    this.playButton.dataset.id  = details.id;
+    this.playButton.innerHTML   = `<i class="material-icons md-48">play_arrow</i>`
 
     this.content = `
       <div class="track-item">
@@ -17,10 +16,6 @@ class TrackItem {
         ${this.playButton.outerHTML}
       </div>
     `;
-  }
-
-  handlePlay() {
-    console.log(this.details);
   }
 }
 

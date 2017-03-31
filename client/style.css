@@ -15,7 +15,7 @@ body {
   background-color: rgb(20, 20, 20);
 }
 
-.app-container {
+#appContainer {
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -23,7 +23,7 @@ body {
   height: 100%;
 }
 
-.title-container {
+#titleContainer {
   display: flex;
   flex-direction: column;
   justify-content: flex-end;
@@ -33,7 +33,7 @@ body {
   /*display: none;*/
 }
 
-.search-container {
+#searchContainer {
   display: flex;
   flex-direction: column;
   justify-content: flex-start;
@@ -43,13 +43,13 @@ body {
   /*display: none;*/
 }
 
-.track-container {
+#trackContainer {
   display: flex;
   flex-direction: column;
   background-color: rgb(35, 35, 35);
   width: 100%;
   height: 80%;
-  overflow: scroll;
+  overflow-y: scroll;
   display: none;
 }
 
@@ -59,13 +59,14 @@ body {
   flex-grow: 5;
   width: 100%;
   min-height: 15%;
+  max-height: 20%;
   margin-top: 20px;
   cursor: pointer;
 }
 
-.track-item:hover, .track-item:active { background-color: #ff7700; }
+.track-item:hover, .track-item:active { background-color: rgb(100, 100, 100); }
 
-.play-button {
+#play {
   height: 75px;
   width: 20%;
   background-color: rgb(55, 55, 55);
@@ -74,8 +75,8 @@ body {
   margin-left: 10px;
 }
 
-.play-button:hover, .play-button:active {
-  background-color: rgb(100, 100, 100);
+#play:hover, #play:active {
+  background-color: rgb(219, 81, 6);
 }
 
 .track-text-container {
@@ -96,7 +97,16 @@ body {
 }
 
 ::-webkit-scrollbar { background-color: rgb(60, 60, 60); }
-::-webkit-scrollbar-thumg { background-color: #ff7700; }
+::-webkit-scrollbar-thumb { background-color: rgb(219, 81, 6); }
+
+#player {
+  display: none;
+}
+
+.material-icons.md-18 { font-size: 18px; }
+.material-icons.md-24 { font-size: 24px; }
+.material-icons.md-36 { font-size: 36px; }
+.material-icons.md-48 { font-size: 48px; }
 
 h1 {
   font-size: 22pt;
@@ -112,7 +122,7 @@ h2 {
   color: white;
 }
 
-strong { color: #ff7700; }
+strong { color: rgb(219, 81, 6); }
 
 input[type="text"] {
   width: 80%;
@@ -126,7 +136,7 @@ input[type="text"] {
 input[type="submit"] {
   width: 40%;
   height: 3em;
-  background-color: #ff7700;
+  background-color: rgb(219, 81, 6);
   border-radius: 0.5em;
   margin-top: 4em;
   cursor: pointer;
@@ -141,7 +151,7 @@ input[type="submit"]:hover, input[type="submit"]:active  { background-color: #ff
 @media (min-width: 576px) {
     input[type="submit"] { width: 30%;}
     .app-container       { width: 80%; }
-    .play-button {
+    #play {
       width: 15%;
       margin-right: 10px;
      }
@@ -153,5 +163,5 @@ input[type="submit"]:hover, input[type="submit"]:active  { background-color: #ff
   h1                   { font-size: 32pt; }
   input[type="text"]   { width: 60%; }
   input[type="submit"] { width: 20%;}
-  .play-button         { width: 10%; }
+  #play         { width: 10%; }
 }
