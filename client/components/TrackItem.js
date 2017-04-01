@@ -11,4 +11,6 @@ const TrackItem = details => (
   `
 );
 
+// <h3>${details.user.username}</h3>
+
 export default TrackItem;

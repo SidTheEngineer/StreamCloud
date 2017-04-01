@@ -65,7 +65,8 @@ class StreamCloud {
   static enqueue(track) {
     if (this.queue.length < 30) {
       this.queue.push(track);
-      console.log(this.queue);
+      console.log("Queue: ");
+      console.log(...this.queue);
     }
     else {
       alert('The queue has a cap of 30 songs!');
@@ -90,6 +91,7 @@ class StreamCloud {
   }
 
   async stream(track) {
+    console.log(`Streaming track:`);
     console.log(track);
     let player = await StreamCloud.startPlayer(track);
     player.play();
@@ -98,6 +100,7 @@ class StreamCloud {
       StreamCloud.enqueue({ id: 245673410 });
       if (this.queue.length > 0) {
         let nextTrack = StreamCloud.dequeue();
+        // Recursion in the wild!
         this.stream(nextTrack);
       }
     });
