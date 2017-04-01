@@ -8,27 +8,25 @@ window.onload = () => {
   const trackContainer  = document.getElementById('trackContainer');
   const searchBox       = document.getElementById('searchBox');
   const submitSearch    = document.getElementById('submitSearch');
-  let currentScreen     = 'search';
+  const S               = new StreamCloud();
 
-  StreamCloud.init();
-
-  console.log(StreamCloud);
+  S.init();
 
   trackContainer.onclick = (e) => {
-    if (e.target.id === 'play') {
-      StreamCloud.appendPlayer(e.target.dataset.id);
+    if (e.target.id === 'enqueue') {
+      S.stream(e.target.dataset);
     }
   }
 
   // Allow enter key to submit
   searchBox.onkeydown = (e) => {
     if (e.which === 13 || e.which === 10)
-      StreamCloud.fetchTracks(e.target.value);
+      S.fetchTracks(e.target.value);
   }
 
-  submitSearch.onmousedown = (e) => fetchTracks(searchBox.value);
+  submitSearch.onmousedown = (e) => S.fetchTracks(searchBox.value);
 
   window.onpopstate = (e) => {
-    StreamCloud.toggleScreen(StreamCloud.currentScreen);
+    S.toggleScreen(S.currentScreen);
   }
 }

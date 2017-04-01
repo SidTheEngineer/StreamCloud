@@ -1,41 +1,38 @@
-import config from '../config.json';
-import TrackItem from './components/TrackItem';
-import SC from 'soundcloud';
+import config     from '../config.json';
+import TrackItem  from './components/TrackItem';
+import Notice     from './components/Notice';
+import SC         from 'soundcloud';
 
 class StreamCloud {
 
   constructor() {
     this.currentScreen = 'search';
-  }
+    this.queue = [];
+    this.player = false;
 
-  static init() {
-    try { SC.initialize({ client_id: config.client_id }); }
-    catch(e) { alert('Unable to initialize SoundCloud API'); }
+    StreamCloud.enqueue        = StreamCloud.enqueue.bind(this);
+    StreamCloud.dequeue        = StreamCloud.dequeue.bind(this);
+    StreamCloud.appendTracks   = StreamCloud.appendTracks.bind(this);
+    StreamCloud.showTracks     = StreamCloud.showTracks.bind(this);
+    StreamCloud.startPlayer    = StreamCloud.startPlayer.bind(this);
 
-    console.log("SoundCloud initialized");
-  }
-
-  static async fetchTracks(text) {
-    let tracks;
-    try { tracks = await SC.get('/tracks', { q: text }); }
-    catch(e) { alert('Connection error, unable to fetch tracks'); }
-
-    console.log(tracks);
-    StreamCloud.appendTracks(tracks);
+    this.stream       = this.stream.bind(this);
+    this.toggleScreen = this.toggleScreen.bind(this);
   }
 
   static appendTracks(tracks) {
-    let temp;
     let trackList = '';
 
     tracks.forEach((track) => {
-      temp = new TrackItem(track);
-      trackList += temp.content;
+      trackList += TrackItem(track);
     });
     trackContainer.innerHTML = trackList;
     StreamCloud.showTracks();
-    history.pushState({}, 'search', '/');
-    this.currentScreen = 'tracks';
+  }
+
+  static appendNotice(text) {
+    trackContainer.innerHTML = Notice(text);
+    StreamCloud.showTracks();
   }
 
   static showSearch() {
@@ -50,9 +47,56 @@ class StreamCloud {
     searchContainer.style.display     = 'none';
     trackContainer.style.display      = 'flex';
     appContainer.style.justifyContent = 'flex-end';
+    history.pushState({}, 'search', '/');
+    this.currentScreen = 'tracks';
   }
 
-  static toggleScreen(screen) {
+  static async startPlayer(track) {
+    try {
+      this.player = await SC.stream(`/tracks/${track.id}?client_id=${config.client_id}&`);
+    }
+    catch(e) {
+      alert(`Connection error, could not stream track`);
+      return;
+    }
+    this.player.options.protocols.reverse();
+  }
+
+  static enqueue(track) {
+    if (this.queue.length < 30) {
+      this.queue.push(track);
+      console.log(this.queue);
+    }
+    else {
+      alert('The queue has a cap of 30 songs!');
+    }
+  }
+
+  static dequeue() {
+    return this.queue.shift();
+  }
+
+  init() {
+    try { SC.initialize({ client_id: config.client_id }); }
+    catch(e) { alert('Unable to initialize SoundCloud API'); }
+    console.log('SoundCloud API Initialized');
+  }
+
+  async fetchTracks(text) {
+    let tracks;
+    try { tracks = await SC.get('/tracks', { q: text }); }
+    catch(e) { alert('Connection error, unable to fetch tracks'); }
+    tracks.length === 0 ? StreamCloud.appendNotice('No results') : StreamCloud.appendTracks(tracks);
+  }
+
+  async stream(track) {
+    await StreamCloud.startPlayer(track);
+    this.player.play();
+
+    
+  }
+
+  toggleScreen(screen) {
     if (screen === 'tracks') {
       StreamCloud.showSearch();
       this.currentScreen = 'search';
@@ -61,13 +105,6 @@ class StreamCloud {
       StreamCloud.showTracks();
       this.currentScreen = 'tracks';
     }
-  }
-
-  static appendPlayer(trackId) {
-    console.log(trackId);
-    const player = document.getElementById('player');
-    player.src = `http://w.soundcloud.com/player/?url=http://api.soundcloud.com/tracks/${trackId}&auto_play=true`
-    player.style.display = 'block';
   }
 }
 
