@@ -8,7 +8,6 @@ class StreamCloud {
   constructor() {
     this.currentScreen = 'search';
     this.queue = [];
-    this.player = false;
 
     StreamCloud.enqueue        = StreamCloud.enqueue.bind(this);
     StreamCloud.dequeue        = StreamCloud.dequeue.bind(this);
@@ -53,13 +52,14 @@ class StreamCloud {
 
   static async startPlayer(track) {
     try {
-      this.player = await SC.stream(`/tracks/${track.id}?client_id=${config.client_id}&`);
+      let player = await SC.stream(`/tracks/${track.id}?client_id=${config.client_id}&`);
+      player.options.protocols.reverse();
+      return player;
     }
     catch(e) {
       alert(`Connection error, could not stream track`);
       return;
     }
-    this.player.options.protocols.reverse();
   }
 
   static enqueue(track) {
@@ -90,10 +90,18 @@ class StreamCloud {
   }
 
   async stream(track) {
-    await StreamCloud.startPlayer(track);
-    this.player.play();
+    console.log(track);
+    let player = await StreamCloud.startPlayer(track);
+    player.play();
 
-    
+    player.on('finish', () => {
+      StreamCloud.enqueue({ id: 245673410 });
+      if (this.queue.length > 0) {
+        let nextTrack = StreamCloud.dequeue();
+        this.stream(nextTrack);
+      }
+    });
+
   }
 
   toggleScreen(screen) {
