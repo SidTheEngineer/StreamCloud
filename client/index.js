@@ -6,19 +6,22 @@ window.onload = () => {
   const titleContainer  = document.getElementById('titleContainer');
   const searchContainer = document.getElementById('searchContainer');
   const trackContainer  = document.getElementById('trackContainer');
+  const trackList       = document.getElementById('trackList');
   const searchBox       = document.getElementById('searchBox');
   const submitSearch    = document.getElementById('submitSearch');
   const S               = new StreamCloud();
 
   S.init();
 
-  trackContainer.onclick = (e) => {
+  appContainer.onclick = (e) => {
     switch (e.target.id) {
       case 'enqueue':
         S.stream(e.target.dataset);
+        e.stopPropagation();
         break;
       case 'back':
         window.history.back();
+        e.stopPropagation();
         break;
     }
   }

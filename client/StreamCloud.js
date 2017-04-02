@@ -1,6 +1,5 @@
 import config     from '../config.json';
 import TrackItem  from './components/TrackItem';
-import Navbar     from './components/Navbar';
 import Notice     from './components/Notice';
 import SC         from 'soundcloud';
 
@@ -27,7 +26,7 @@ class StreamCloud {
     tracks.forEach((track) => {
       trackList += TrackItem(track);
     });
-    trackContainer.innerHTML = Navbar() + trackList;
+    trackContainer.innerHTML = trackList;
     StreamCloud.showTracks();
   }
 
