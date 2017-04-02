@@ -83,10 +83,15 @@ class StreamCloud {
   }
 
   async fetchTracks(text) {
-    let tracks;
-    try { tracks = await SC.get('/tracks', { q: text }); }
-    catch(e) { alert('Connection error, unable to fetch tracks'); }
-    tracks.length === 0 ? StreamCloud.appendNotice('No results') : StreamCloud.appendTracks(tracks);
+    StreamCloud.appendNotice('Loading ...');
+    try {
+      SC.get('/tracks', { q: text }).then((tracks) => {
+        tracks.length === 0 ? StreamCloud.appendNotice('No results') : StreamCloud.appendTracks(tracks);
+      });
+    }
+    catch (e) {
+      StreamCloud.appendNotice('Connection error');
+    }
   }
 
   async stream(track) {
