@@ -1,5 +1,6 @@
 import config     from '../config.json';
 import TrackItem  from './components/TrackItem';
+import Navbar     from './components/Navbar';
 import Notice     from './components/Notice';
 import SC         from 'soundcloud';
 
@@ -7,7 +8,8 @@ class StreamCloud {
 
   constructor() {
     this.currentScreen = 'search';
-    this.queue = [];
+    this.queue         = [];
+    this.playing       = false;
 
     StreamCloud.enqueue        = StreamCloud.enqueue.bind(this);
     StreamCloud.dequeue        = StreamCloud.dequeue.bind(this);
@@ -25,7 +27,7 @@ class StreamCloud {
     tracks.forEach((track) => {
       trackList += TrackItem(track);
     });
-    trackContainer.innerHTML = trackList;
+    trackContainer.innerHTML = Navbar() + trackList;
     StreamCloud.showTracks();
   }
 
@@ -65,8 +67,6 @@ class StreamCloud {
   static enqueue(track) {
     if (this.queue.length < 30) {
       this.queue.push(track);
-      console.log("Queue: ");
-      console.log(...this.queue);
     }
     else {
       alert('The queue has a cap of 30 songs!');
@@ -91,20 +91,23 @@ class StreamCloud {
   }
 
   async stream(track) {
-    console.log(`Streaming track:`);
-    console.log(track);
-    let player = await StreamCloud.startPlayer(track);
-    player.play();
+    if (!this.playing) {
+      let player = await StreamCloud.startPlayer(track);
+      player.play();
+      this.playing = true;
 
-    player.on('finish', () => {
-      StreamCloud.enqueue({ id: 245673410 });
-      if (this.queue.length > 0) {
-        let nextTrack = StreamCloud.dequeue();
-        // Recursion in the wild!
-        this.stream(nextTrack);
-      }
-    });
-
+      player.on('finish', () => {
+        this.playing = false;
+        if (this.queue.length > 0) {
+          let nextTrack = StreamCloud.dequeue();
+          this.stream(nextTrack);
+        }
+      });
+    }
+    else if (this.playing) {
+      if (!this.queue.includes(track))
+        StreamCloud.enqueue(track);
+    }
   }
 
   toggleScreen(screen) {

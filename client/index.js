@@ -13,8 +13,13 @@ window.onload = () => {
   S.init();
 
   trackContainer.onclick = (e) => {
-    if (e.target.id === 'enqueue') {
-      S.stream(e.target.dataset);
+    switch (e.target.id) {
+      case 'enqueue':
+        S.stream(e.target.dataset);
+        break;
+      case 'back':
+        window.history.back();
+        break;
     }
   }
 

@@ -3,6 +3,7 @@ html, body {
   width: 100%;
 }
 
+/* debug */
 /** {
   border: thin red solid;
 }*/
@@ -65,7 +66,7 @@ body {
   cursor: pointer;
 }
 
-.track-item:hover, .track-item:active { background-color: rgb(100, 100, 100); }
+.track-item:hover, .track-item:active { background-color: rgb(25, 25, 25); }
 
 .button-container {
   display: flex;
@@ -83,6 +84,18 @@ body {
   width: 75%;
 }
 
+h1, h2, h3 {
+  margin: 0 auto;
+  font-family: sans-serif;
+  color: white;
+}
+
+h1 { font-size: 22pt; }
+
+h2 { font-size: 10pt; }
+
+h3 { font-size: 8pt; }
+
 .track-text {
   width: 100%;
   overflow: hidden;
@@ -91,10 +104,24 @@ body {
   margin-left: 10px;
 }
 
+.username {
+  margin-top: 10px;
+  margin-left: 10px;
+  color: gray;
+}
+
+.navbar {
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-start;
+  align-items: center;
+  min-height: 48px;
+  width: 100%;
+  background-color: rgb(25, 25, 25);
+}
+
 ::-webkit-scrollbar { background-color: rgb(60, 60, 60); }
 ::-webkit-scrollbar-thumb { background-color: rgb(219, 81, 6); }
-
-#player { display: none; }
 
 .notice {
   display: flex;
@@ -102,30 +129,17 @@ body {
   margin-top: 5em;
 }
 
-.material-icons.md-18 { font-size: 18px; }
-.material-icons.md-24 { font-size: 24px; }
-.material-icons.md-36 { font-size: 36px; }
-.material-icons.md-48 { font-size: 48px; }
-
-.material-icons { color: rgb(40, 40, 40); }
+/* Icons */
+.material-icons.md-18  { font-size: 18px; }
+.material-icons.md-24  { font-size: 24px; }
+.material-icons.md-36  { font-size: 36px; }
+.material-icons.md-48  { font-size: 48px; }
+.material-icons        { cursor: pointer; color: rgb(45, 45, 45); }
 i.material-icons:hover { color: rgb(219, 81, 6); }
-
-h1 {
-  font-size: 22pt;
-  margin: 0 auto;
-  font-family: sans-serif;
-  color: white;
-}
-
-h2 {
-  font-size: 10pt;
-  margin: 0 auto;
-  font-family: sans-serif;
-  color: white;
-}
 
 strong { color: rgb(219, 81, 6); }
 
+/* Search box */
 input[type="text"] {
   width: 80%;
   height: 2.2em;
@@ -136,6 +150,7 @@ input[type="text"] {
   text-align: center;
 }
 
+/* Submit search button */
 input[type="submit"] {
   width: 40%;
   height: 3em;
