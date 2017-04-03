@@ -46,24 +46,24 @@ One of the toughest problems to tackle while building this application was writi
 ```JavaScript
 async stream(track) {
   if (!this.playing) {
-    let player = await StreamCloud.startPlayer(track);
-    player.play();
     this.playing = true;
-    StreamCloud.toggleControls(true);
+    let player = await this.startPlayer(track);
+    this.currentPlayer = player;
+    player.play();
+    this.toggleControls(true);
 
     player.on('finish', () => {
       this.playing = false;
-      StreamCloud.toggleControls(false);
+      this.toggleControls(false);
       if (this.queue.length > 0) {
-        let nextTrack = StreamCloud.dequeue();
+        let nextTrack = this.dequeue();
         this.stream(nextTrack);
       }
     });
   }
-  else if (this.playing) {
-    if (!this.queue.includes(track))
-      StreamCloud.enqueue(track);
-  }
+  else if (this.playing && !this.queue.includes(track) && this.currentPlayer.options.soundId != track.id)
+    this.enqueue(track);
+  else alert(`${track.title} is already in the queue`);
 }
 ```
 

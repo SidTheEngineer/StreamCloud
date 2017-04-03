@@ -129,10 +129,10 @@ class StreamCloud {
 
   async stream(track) {
     if (!this.playing) {
+      this.playing = true;
       let player = await this.startPlayer(track);
       this.currentPlayer = player;
       player.play();
-      this.playing = true;
       this.toggleControls(true);
 
       player.on('finish', () => {
@@ -144,10 +144,9 @@ class StreamCloud {
         }
       });
     }
-    else if (this.playing) {
-      if (!this.queue.includes(track))
-        this.enqueue(track);
-    }
+    else if (this.playing && !this.queue.includes(track) && this.currentPlayer.options.soundId != track.id)
+      this.enqueue(track);
+    else alert(`${track.title} is already in the queue`);
   }
 
   showSearch() {
