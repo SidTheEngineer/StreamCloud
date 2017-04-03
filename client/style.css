@@ -124,16 +124,19 @@ h2, h3 { font-size: 10pt; }
   background-color: rgb(25, 25, 25);
 }
 
-#player {
+#playerContainer {
   display: flex;
   position: fixed;
   flex-direction: row;
-  justify-content: flex-start;
+  justify-content: space-around;
+  align-items: center;
   bottom: 0;
   height: 90px;
   width: 100%;
   background-color: rgb(25, 25, 25);
 }
+
+#playButton { display: none; }
 
 ::-webkit-scrollbar { background-color: rgb(60, 60, 60); }
 ::-webkit-scrollbar-thumb { background-color: rgb(219, 81, 6); }
