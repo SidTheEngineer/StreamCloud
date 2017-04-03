@@ -62,7 +62,7 @@ body {
   justify-content: space-between;
   flex-grow: 5;
   width: 100%;
-  min-height: 10%;
+  min-height: 60px;
   max-height: 15%;
   margin-top: 20px;
   cursor: pointer;
@@ -115,7 +115,7 @@ h2, h3 { font-size: 10pt; }
   position: fixed;
   top: 0;
   flex-direction: row;
-  justify-content: flex-start;
+  justify-content: space-between;
   align-items: center;
   min-height: 48px;
   max-height: 48px;
@@ -198,4 +198,5 @@ input[type="submit"]:hover, input[type="submit"]:active  { background-color: #ff
   .track-text           { font-size: 16pt; }
   .button-container     { margin-right: 10%; }
   #back                 { margin-left: 10%; }
+  #queue                { margin-right: 10%; }
 }

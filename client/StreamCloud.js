@@ -28,12 +28,14 @@ class StreamCloud {
     this.appendNotice     = this.appendNotice.bind(this);
     this.showTracks       = this.showTracks.bind(this);
     this.showSearch       = this.showSearch.bind(this);
+    this.showQueue        = this.showQueue.bind(this);
     this.startPlayer      = this.startPlayer.bind(this);
     this.toggleControls   = this.toggleControls.bind(this);
     this.togglePlayButton = this.togglePlayButton.bind(this);
     this.stream           = this.stream.bind(this);
     this.toggleScreen     = this.toggleScreen.bind(this);
     this.togglePlayState  = this.togglePlayState.bind(this);
+    this.skipTrack        = this.skipTrack.bind(this);
 
     // Listeners
     this.appContainer.onclick = (e) => {
@@ -46,6 +48,10 @@ class StreamCloud {
           window.history.back();
           e.stopPropagation();
           break;
+        case 'queue':
+          this.showQueue();
+          e.stopPropagation();
+          break;
         case 'pauseButton':
           this.togglePlayState(false);
           e.stopPropagation();
@@ -53,6 +59,11 @@ class StreamCloud {
         case 'playButton':
           this.togglePlayState(true);
           e.stopPropagation();
+          break;
+        case 'skipTrack':
+          this.skipTrack();
+          e.stopPropagation();
+          break;
       }
     }
 
@@ -149,6 +160,15 @@ class StreamCloud {
     else alert(`${track.title} is already in the queue`);
   }
 
+  skipTrack() {
+    if (this.queue.length > 0) {
+      this.currentPlayer.pause();
+      this.playing = false;
+      let nextTrack = this.dequeue();
+      this.stream(nextTrack);
+    }
+  }
+
   showSearch() {
     this.trackContainer.style.display      = 'none';
     this.titleContainer.style.display      = 'flex';
@@ -163,6 +183,10 @@ class StreamCloud {
     this.appContainer.style.justifyContent = 'flex-end';
     history.pushState({}, 'search', '/');
     this.currentScreen = 'tracks';
+  }
+
+  showQueue() {
+    console.log(...this.queue);
   }
 
   togglePlayButton(play) {
