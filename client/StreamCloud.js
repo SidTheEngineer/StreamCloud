@@ -20,10 +20,12 @@ class StreamCloud {
     this.pauseButton     = document.getElementById('pauseButton');
 
     // Default state
-    this.currentScreen = 'search';
-    this.queue         = [];
-    this.playing       = false;
-    this.currentPlayer = null;
+    this.currentScreen  = 'search';
+    this.queue          = [];
+    this.previousTracks = [];
+    this.playing        = false;
+    this.currentPlayer  = null;
+    this.currentTrack   = null;
 
     this.enqueue              = this.enqueue.bind(this);
     this.dequeue              = this.dequeue.bind(this);
@@ -39,6 +41,7 @@ class StreamCloud {
     this.toggleScreen         = this.toggleScreen.bind(this);
     this.togglePlayState      = this.togglePlayState.bind(this);
     this.skipTrack            = this.skipTrack.bind(this);
+    this.pushToPrevious       = this.pushToPrevious.bind(this);
 
     // Listeners
     this.appContainer.onclick = (e) => {
@@ -144,12 +147,15 @@ class StreamCloud {
       this.playing = true;
       let player = await this.startPlayer(track);
       this.currentPlayer = player;
+      this.currentTrack = track;
       player.play();
       this.toggleControls(true);
 
       player.on('finish', () => {
+        console.log(...this.previousTracks);
         this.playing = false;
         this.toggleControls(false);
+        this.pushToPrevious(track);
         if (this.queue.length > 0) {
           let nextTrack = this.dequeue();
           this.stream(nextTrack);
@@ -165,9 +171,20 @@ class StreamCloud {
     if (this.queue.length > 0) {
       this.currentPlayer.pause();
       this.playing = false;
+      this.pushToPrevious(this.currentTrack);
       let nextTrack = this.dequeue();
       this.stream(nextTrack);
     }
+  }
+
+  pushToPrevious(track) {
+    if (this.previousTracks.length < 30) this.previousTracks.push(track);
+    else {
+      this.previousTracks.shift();
+      this.previousTracks.push(track);
+    }
+
+    console.log(...this.previousTracks);
   }
 
   showSearch() {
