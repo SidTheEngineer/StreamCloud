@@ -6,6 +6,7 @@ StreamCloud is a small SoundCloud clone that allows the user to stream and queue
 <div align="center">
   <img src="./screenshot-home.png" height=400 />
   <img src="./screenshot-tracks.png" height=400 />
+  <img src="./screenshot-queue.png" height=400 />
 </div>
 
 
@@ -42,7 +43,7 @@ yarn test
 
 ## Challenges
 
-### Asynchronous requests
+### Asynchronous Requests
 
 One of the toughest problems to tackle while building this application was writing a streaming algorithm that could work asynchronously with a queue. In order to properly account for the asynchrony of user requests and the SoundCloud player streaming tracks, edge cases involving the player and its 'finish' event listener had to be implemented. This includes the ability to enqueue a track if the player is currently streaming and not allowing duplicate tracks in the queue to avoid uncaught promise errors with the player (this can be changed in the future). A recursive descent is made when the current player is finished playing, which allows a new player to be used for the next track, avoiding some promise interruption errors.
 ```JavaScript
@@ -73,11 +74,15 @@ async stream(track) {
 
 Being a small enough project (and a demonstration of technical ability), I decided to not use a front-end framework and relied mainly on the newer features of ECMAScript alongside webpack to create a modular front-end. Experience working with React allowed me to model the front-end in a way that allows for reusable components. It is by no means as elegant as if I were to use a framework, however it gets the job done without many issues. For future improvements, I would most likely end up rewriting the application using React to make state management a lot easier throughout.
 
-## Future Ideas
+## Future Improvements
 
 ### Queue Recommendations
 
 I think it would be pretty cool to build a recommendation  feature based on data collected from the tracks currently in the queue (BPM, genre, artist/username). The user could simply choose whether or not to add the recommended track(s) to the queue with a single click.
+
+### Animations
+
+A more intuitive and smooth UX could be achieved with animations throughout the application (slide up/down queue, slide in/out screen switching, etc). For time constraint purposes, animations were originally left out.
 
 ### Framework Rewrite
 
@@ -88,4 +93,4 @@ The beauty behind writing some "vanilla" JS is that one starts to appreciate and
 While building the project I started to realize my focus shifted from the original idea of creating different ways to filter searches to building out a little media player. This has left the searching capability pretty rudimentary. I would definitely consider adding searching filters (genre, likes, plays) in the future.
 
 ----
-Overall, I thoroughly enjoyed building this little project and working with the SoundCloud API. I think this is an excellent way of screening for potential job candidates and should be more of a norm if it isn't already.
+Overall, I thoroughly enjoyed building this little project and working with the SoundCloud API. I think this is an excellent way of allowing potential job candidates to demonstrate their technical ability, and should be more of a norm if it isn't already.

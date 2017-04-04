@@ -1,5 +1,6 @@
 import config     from '../config.json';
 import TrackItem  from './components/TrackItem';
+import QueueItem  from './components/QueueItem';
 import Notice     from './components/Notice';
 import Controls   from './components/Controls';
 import SC         from 'soundcloud';
@@ -11,31 +12,33 @@ class StreamCloud {
     this.titleContainer  = document.getElementById('titleContainer');
     this.searchContainer = document.getElementById('searchContainer');
     this.trackContainer  = document.getElementById('trackContainer');
+    this.queueContainer  = document.getElementById('queueContainer');
     this.searchBox       = document.getElementById('searchBox');
     this.submitSearch    = document.getElementById('submitSearch');
     this.playerContainer = document.getElementById('playerContainer');
     this.playButton      = document.getElementById('playButton');
     this.pauseButton     = document.getElementById('pauseButton');
 
+    // Default state
     this.currentScreen = 'search';
     this.queue         = [];
     this.playing       = false;
-    this.currentPlayer = '';
+    this.currentPlayer = null;
 
-    this.enqueue          = this.enqueue.bind(this);
-    this.dequeue          = this.dequeue.bind(this);
-    this.appendTracks     = this.appendTracks.bind(this);
-    this.appendNotice     = this.appendNotice.bind(this);
-    this.showTracks       = this.showTracks.bind(this);
-    this.showSearch       = this.showSearch.bind(this);
-    this.showQueue        = this.showQueue.bind(this);
-    this.startPlayer      = this.startPlayer.bind(this);
-    this.toggleControls   = this.toggleControls.bind(this);
-    this.togglePlayButton = this.togglePlayButton.bind(this);
-    this.stream           = this.stream.bind(this);
-    this.toggleScreen     = this.toggleScreen.bind(this);
-    this.togglePlayState  = this.togglePlayState.bind(this);
-    this.skipTrack        = this.skipTrack.bind(this);
+    this.enqueue              = this.enqueue.bind(this);
+    this.dequeue              = this.dequeue.bind(this);
+    this.appendTracks         = this.appendTracks.bind(this);
+    this.appendNotice         = this.appendNotice.bind(this);
+    this.showTracks           = this.showTracks.bind(this);
+    this.showSearch           = this.showSearch.bind(this);
+    this.toggleQueueContainer = this.toggleQueueContainer.bind(this);
+    this.startPlayer          = this.startPlayer.bind(this);
+    this.toggleControls       = this.toggleControls.bind(this);
+    this.togglePlayButton     = this.togglePlayButton.bind(this);
+    this.stream               = this.stream.bind(this);
+    this.toggleScreen         = this.toggleScreen.bind(this);
+    this.togglePlayState      = this.togglePlayState.bind(this);
+    this.skipTrack            = this.skipTrack.bind(this);
 
     // Listeners
     this.appContainer.onclick = (e) => {
@@ -49,7 +52,7 @@ class StreamCloud {
           e.stopPropagation();
           break;
         case 'queue':
-          this.showQueue();
+          this.toggleQueueContainer();
           e.stopPropagation();
           break;
         case 'pauseButton':
@@ -75,9 +78,7 @@ class StreamCloud {
 
     this.submitSearch.onmousedown = (e) => this.fetchTracks(this.searchBox.value);
 
-    window.onpopstate = (e) => {
-      this.toggleScreen(this.currentScreen);
-    }
+    window.onpopstate = (e) => this.toggleScreen(this.currentScreen);
   }
 
   init() {
@@ -171,22 +172,46 @@ class StreamCloud {
 
   showSearch() {
     this.trackContainer.style.display      = 'none';
+    this.queueContainer.style.display      = 'none';
     this.titleContainer.style.display      = 'flex';
     this.searchContainer.style.display     = 'flex';
     this.appContainer.style.justifyContent = 'center';
+    this.queueShowing = false;
   }
 
   showTracks() {
     this.titleContainer.style.display      = 'none';
+    this.queueContainer.style.display      = 'none';
     this.searchContainer.style.display     = 'none';
     this.trackContainer.style.display      = 'flex';
     this.appContainer.style.justifyContent = 'flex-end';
+    this.queueShowing = false;
     history.pushState({}, 'search', '/');
     this.currentScreen = 'tracks';
   }
 
-  showQueue() {
-    console.log(...this.queue);
+  toggleQueueContainer() {
+    if (!this.queueShowing) {
+      let queueItems = '';
+      this.queue.forEach(track => { queueItems += QueueItem(track) });
+      this.queueContainer.innerHTML      = queueItems;
+      this.trackContainer.style.display  = 'none';
+      this.titleContainer.style.display  = 'none';
+      this.searchContainer.style.display = 'none';
+      this.queueContainer.style.display  = 'flex';
+      this.queueShowing = true;
+    }
+    else if (this.currentScreen === 'search') {
+      this.titleContainer.style.display  = 'flex';
+      this.searchContainer.style.display = 'flex';
+      this.queueContainer.style.display  = 'none';
+      this.queueShowing = false;
+    }
+    else {
+      this.trackContainer.style.display  = 'flex';
+      this.queueContainer.style.display  = 'none';
+      this.queueShowing = false;
+    }
   }
 
   togglePlayButton(play) {

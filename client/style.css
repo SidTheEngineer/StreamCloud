@@ -147,6 +147,32 @@ h2, h3 { font-size: 10pt; }
   margin-top: 5em;
 }
 
+#queueContainer {
+  display: none;
+  flex-direction: column;
+  align-items: center;
+  height: 100%;
+  width: 100%;
+  margin-top: 58px;
+  margin-bottom: 100px;
+  background-color: rgb(25, 25, 25);
+  overflow-y: scroll;
+}
+
+.queue-item {
+  font-size: 12pt;
+  margin-top: 20px;
+  width: 70%;
+}
+
+.queue-text {
+  width: 100%;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  text-align: center;
+}
+
 /* Icons */
 .material-icons.md-18  { font-size: 18px; }
 .material-icons.md-24  { font-size: 24px; }
@@ -199,4 +225,5 @@ input[type="submit"]:hover, input[type="submit"]:active  { background-color: #ff
   .button-container     { margin-right: 10%; }
   #back                 { margin-left: 10%; }
   #queue                { margin-right: 10%; }
+  .queue-text           { font-size: 16pt; }
 }
