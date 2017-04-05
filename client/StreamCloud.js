@@ -26,6 +26,7 @@ class StreamCloud {
     this.playing        = false;
     this.currentPlayer  = null;
     this.currentTrack   = null;
+    this.seenTracks     = {}
 
     this.enqueue              = this.enqueue.bind(this);
     this.dequeue              = this.dequeue.bind(this);
@@ -38,9 +39,11 @@ class StreamCloud {
     this.toggleControls       = this.toggleControls.bind(this);
     this.togglePlayButton     = this.togglePlayButton.bind(this);
     this.stream               = this.stream.bind(this);
+    this.immediateStream      = this.immediateStream.bind(this);
     this.toggleScreen         = this.toggleScreen.bind(this);
     this.togglePlayState      = this.togglePlayState.bind(this);
     this.skipTrack            = this.skipTrack.bind(this);
+    this.backTrack            = this.backTrack.bind(this);
     this.pushToPrevious       = this.pushToPrevious.bind(this);
 
     // Listeners
@@ -60,6 +63,7 @@ class StreamCloud {
           break;
         case 'pauseButton':
           this.togglePlayState(false);
+          console.log(this.currentPlayer);
           e.stopPropagation();
           break;
         case 'playButton':
@@ -70,6 +74,9 @@ class StreamCloud {
           this.skipTrack();
           e.stopPropagation();
           break;
+        case 'backTrack':
+          this.backTrack();
+          e.stopPropagation();
       }
     }
 
@@ -85,20 +92,37 @@ class StreamCloud {
   }
 
   init() {
-    try { SC.initialize({ client_id: config.client_id }); }
-    catch(e) { alert('Unable to initialize SoundCloud API'); }
-    console.log('SoundCloud API Initialized');
+    try {
+      SC.initialize({ client_id: config.client_id });
+      console.log('SoundCloud API Initialized');
+      return true;
+    }
+    catch(e) {
+      alert('Unable to initialize SoundCloud API');
+      return false;
+    }
   }
 
   async fetchTracks(text) {
     this.appendNotice('Loading ...');
     try {
       SC.get('/tracks', { q: text }).then((tracks) => {
-        tracks.length === 0 ? this.appendNotice('No results') : this.appendTracks(tracks);
+        if (tracks.length === 0) {
+          this.appendNotice('No results');
+          this.showTracks();
+          history.pushState({}, 'search', '/');
+        }
+        else {
+          this.appendTracks(tracks);
+          this.showTracks();
+          history.pushState({}, 'search', '/');
+        }
       });
     }
     catch (e) {
       this.appendNotice('Connection error');
+      this.showTracks();
+      history.pushState({}, 'search', '/');
     }
   }
 
@@ -109,17 +133,15 @@ class StreamCloud {
       trackList += TrackItem(track);
     });
     this.trackContainer.innerHTML = trackList;
-    this.showTracks();
   }
 
   appendNotice(text) {
     this.trackContainer.innerHTML = Notice(text);
-    this.showTracks();
   }
 
   async startPlayer(track) {
     try {
-      let player = await SC.stream(`/tracks/${track.id}?client_id=${config.client_id}&`);
+      let player = await require('soundcloud').stream(`/tracks/${track.id}?client_id=${config.client_id}&`);
       player.options.protocols.reverse();
       return player;
     }
@@ -143,17 +165,11 @@ class StreamCloud {
   }
 
   async stream(track) {
+    this.seenTracks[track] = true;
     if (!this.playing) {
-      this.playing = true;
-      let player = await this.startPlayer(track);
-      this.currentPlayer = player;
-      this.currentTrack = track;
-      player.play();
-      this.toggleControls(true);
+      await this.immediateStream(track);
 
-      player.on('finish', () => {
-        console.log(...this.previousTracks);
-        this.playing = false;
+      this.currentPlayer.on('finish', () => {
         this.toggleControls(false);
         this.pushToPrevious(track);
         if (this.queue.length > 0) {
@@ -167,13 +183,32 @@ class StreamCloud {
     else alert(`${track.title} is already in the queue`);
   }
 
+  async immediateStream(track) {
+    this.playing = true;
+    let player = await this.startPlayer(track);
+    this.currentPlayer = player;
+    this.currentTrack = track;
+    player.play();
+    this.toggleControls(true);
+  }
+
   skipTrack() {
     if (this.queue.length > 0) {
-      this.currentPlayer.pause();
-      this.playing = false;
+      this.currentPlayer.seek(0);
+      this.togglePlayState(false);
       this.pushToPrevious(this.currentTrack);
       let nextTrack = this.dequeue();
-      this.stream(nextTrack);
+      this.immediateStream(nextTrack);
+    }
+  }
+
+  backTrack() {
+    let prevTrack = this.previousTracks.pop();
+    if (!!prevTrack) {
+      this.currentPlayer.seek(0);
+      this.togglePlayState(false);
+      this.queue.unshift(this.currentTrack);
+      this.immediateStream(prevTrack);
     }
   }
 
@@ -194,6 +229,7 @@ class StreamCloud {
     this.searchContainer.style.display     = 'flex';
     this.appContainer.style.justifyContent = 'center';
     this.queueShowing = false;
+    this.currentScreen = 'search';
   }
 
   showTracks() {
@@ -203,7 +239,6 @@ class StreamCloud {
     this.trackContainer.style.display      = 'flex';
     this.appContainer.style.justifyContent = 'flex-end';
     this.queueShowing = false;
-    history.pushState({}, 'search', '/');
     this.currentScreen = 'tracks';
   }
 
@@ -232,6 +267,8 @@ class StreamCloud {
   }
 
   togglePlayButton(play) {
+    // These are dynamically injected into the DOM and might not be there
+    // upon instantiation of StreamCloud.
     let playButton = document.getElementById('playButton');
     let pauseButton = document.getElementById('pauseButton');
     if (play) {
@@ -250,17 +287,17 @@ class StreamCloud {
 
   togglePlayState(play) {
     play ? this.currentPlayer.play() : this.currentPlayer.pause();
+    this.playing = play;
     this.togglePlayButton(play);
   }
 
   toggleScreen(screen) {
     if (screen === 'tracks') {
       this.showSearch();
-      this.currentScreen = 'search';
     }
     else {
       this.showTracks();
-      this.currentScreen = 'tracks';
+      history.pushState({}, 'search', '/');
     }
   }
 }
