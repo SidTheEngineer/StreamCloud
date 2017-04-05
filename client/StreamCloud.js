@@ -47,7 +47,6 @@ class StreamCloud {
           break;
         case 'pauseButton':
           this.togglePlayState(false);
-          console.log(this.currentPlayer);
           e.stopPropagation();
           break;
         case 'playButton':
@@ -149,7 +148,6 @@ class StreamCloud {
   }
 
   async stream(track) {
-    console.log(track);
     if (!this.playing) {
       await this.immediateStream(track);
 
@@ -168,12 +166,11 @@ class StreamCloud {
   }
 
   async immediateStream(track) {
-    this.playing = true;
     let player = await this.startPlayer(track);
     this.currentPlayer = player;
     this.currentTrack = track;
-    this.currentPlayer.play();
     this.toggleControls(true);
+    this.togglePlayState(true);
   }
 
   skipTrack() {
@@ -182,7 +179,7 @@ class StreamCloud {
       this.togglePlayState(false);
       this.pushToPrevious(this.currentTrack);
       let nextTrack = this.dequeue();
-      this.immediateStream(nextTrack);
+      this.stream(nextTrack);
     }
   }
 
@@ -192,7 +189,7 @@ class StreamCloud {
       this.currentPlayer.seek(0);
       this.togglePlayState(false);
       this.queue.unshift(this.currentTrack);
-      this.immediateStream(prevTrack);
+      this.stream(prevTrack);
     }
   }
 
@@ -268,7 +265,16 @@ class StreamCloud {
   }
 
   togglePlayState(play) {
-    play ? this.currentPlayer.play() : this.currentPlayer.pause();
+    if (play) {
+      this.currentPlayer.play();
+      this.currentPlayer.pause();
+      this.currentPlayer.play();
+    }
+    else {
+      this.currentPlayer.pause();
+      this.currentPlayer.play();
+      this.currentPlayer.pause();
+    }
     this.playing = play;
     this.togglePlayButton(play);
   }

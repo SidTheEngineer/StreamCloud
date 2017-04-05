@@ -63,7 +63,47 @@ async stream(track) {
     this.enqueue(track);
   else alert(`${track.title} is already in the queue`);
 }
+
+async immediateStream(track) {
+  let player = await this.startPlayer(track);
+  this.currentPlayer = player;
+  this.currentTrack = track;
+  this.toggleControls(true);
+  this.togglePlayState(true);
+}
 ```
+
+### Google Chrome Player Bug
+
+Due to upcoming school exams and time constraints, I was not able to pinpoint an odd bug that occurs with the player in Chrome before my submission.
+
+If the SoundCloud player sees the same track (i.e. skip to the next track then go back to the previous one), two pause events are fired, yet the track will continue to play. This throws the playing state out of sync with the player. In order to pause the player, the play/pause button will need to be toggled a couple times.
+
+In order to fix this I had to do something a little hacky for the time being. When the play/pause button is pressed, it will play-pause-play or pause-play-pause:
+
+```JavaScript
+togglePlayState(play) {
+  if (play) {
+    this.currentPlayer.play();
+    this.currentPlayer.pause();
+    this.currentPlayer.play();
+  }
+  else {
+    this.currentPlayer.pause();
+    this.currentPlayer.play();
+    this.currentPlayer.pause();
+  }
+  this.playing = play;
+  this.togglePlayButton(play);
+}
+```
+
+Unfortunately, this throws an error whenever a track is paused:
+```
+Uncaught (in promise) DOMException: The play() request was interrupted by a call to pause().
+```
+
+It doesn't seem to cause any issues, but it's definitely something worth investigating. When testing in Firefox, the error is not thrown.
 
 ### Architecture
 
