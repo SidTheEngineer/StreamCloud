@@ -1,6 +1,7 @@
 import StreamCloud from '../client/StreamCloud';
 
 describe('StreamCloud', () => {
+  // Initial, unmodified body.
   document.body.innerHTML =
   `
     <div id="appContainer">
@@ -73,5 +74,16 @@ describe('StreamCloud', () => {
     expect(S.appContainer.style.justifyContent).toBe('flex-end');
     expect(S.queueShowing).toBeFalsy();
     expect(S.currentScreen).toBe('tracks');
+  });
+
+  it('shows the search screen', () => {
+    S.showSearch();
+    expect(S.trackContainer.style.display).toBe('none');
+    expect(S.queueContainer.style.display).toBe('none');
+    expect(S.titleContainer.style.display).toBe('flex');
+    expect(S.searchContainer.style.display).toBe('flex');
+    expect(S.appContainer.style.justifyContent).toBe('center');
+    expect(S.queueShowing).toBeFalsy();
+    expect(S.currentScreen).toBe('search');
   });
 });
