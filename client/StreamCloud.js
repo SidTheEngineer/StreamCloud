@@ -3,8 +3,11 @@ import TrackItem  from './components/TrackItem';
 import QueueItem  from './components/QueueItem';
 import Notice     from './components/Notice';
 import Controls   from './components/Controls';
-import SC         from 'soundcloud';
 
+import SC           from 'soundcloud';
+import { autobind } from 'core-decorators';
+
+@autobind
 class StreamCloud {
 
   constructor() {
@@ -27,24 +30,6 @@ class StreamCloud {
     this.currentPlayer  = null;
     this.currentTrack   = null;
     this.seenTracks     = {}
-
-    this.enqueue              = this.enqueue.bind(this);
-    this.dequeue              = this.dequeue.bind(this);
-    this.appendTracks         = this.appendTracks.bind(this);
-    this.appendNotice         = this.appendNotice.bind(this);
-    this.showTracks           = this.showTracks.bind(this);
-    this.showSearch           = this.showSearch.bind(this);
-    this.toggleQueueContainer = this.toggleQueueContainer.bind(this);
-    this.startPlayer          = this.startPlayer.bind(this);
-    this.toggleControls       = this.toggleControls.bind(this);
-    this.togglePlayButton     = this.togglePlayButton.bind(this);
-    this.stream               = this.stream.bind(this);
-    this.immediateStream      = this.immediateStream.bind(this);
-    this.toggleScreen         = this.toggleScreen.bind(this);
-    this.togglePlayState      = this.togglePlayState.bind(this);
-    this.skipTrack            = this.skipTrack.bind(this);
-    this.backTrack            = this.backTrack.bind(this);
-    this.pushToPrevious       = this.pushToPrevious.bind(this);
 
     // Listeners
     this.appContainer.onclick = (e) => {
