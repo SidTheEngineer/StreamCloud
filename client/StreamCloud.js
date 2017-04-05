@@ -29,7 +29,6 @@ class StreamCloud {
     this.playing        = false;
     this.currentPlayer  = null;
     this.currentTrack   = null;
-    this.seenTracks     = {}
 
     // Listeners
     this.appContainer.onclick = (e) => {
@@ -126,7 +125,7 @@ class StreamCloud {
 
   async startPlayer(track) {
     try {
-      let player = await require('soundcloud').stream(`/tracks/${track.id}?client_id=${config.client_id}&`);
+      let player = await SC.stream(`/tracks/${track.id}?client_id=${config.client_id}&`);
       player.options.protocols.reverse();
       return player;
     }
@@ -150,7 +149,7 @@ class StreamCloud {
   }
 
   async stream(track) {
-    this.seenTracks[track] = true;
+    console.log(track);
     if (!this.playing) {
       await this.immediateStream(track);
 
@@ -173,7 +172,7 @@ class StreamCloud {
     let player = await this.startPlayer(track);
     this.currentPlayer = player;
     this.currentTrack = track;
-    player.play();
+    this.currentPlayer.play();
     this.toggleControls(true);
   }
 
@@ -203,8 +202,6 @@ class StreamCloud {
       this.previousTracks.shift();
       this.previousTracks.push(track);
     }
-
-    console.log(...this.previousTracks);
   }
 
   showSearch() {

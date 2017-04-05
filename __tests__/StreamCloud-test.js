@@ -25,12 +25,17 @@ describe('StreamCloud', () => {
     </div>
   `
 
-  const track = {
+  const testTrack = {
     title: 'test',
     id: '123',
     user: {
       username: 'test123'
     }
+  }
+
+  const realTrack = {
+    id: "214439881",
+    title: "Raincoats (MUSIC VIDEO IN DESCRIPTION)"
   }
 
   const S = new StreamCloud();
@@ -40,7 +45,7 @@ describe('StreamCloud', () => {
   });
 
   it('appends tracks to the DOM', () => {
-    S.appendTracks([track]);
+    S.appendTracks([testTrack]);
     expect(S.trackContainer.innerHTML).toBeTruthy();
   });
 
@@ -50,18 +55,18 @@ describe('StreamCloud', () => {
   });
 
   it('enqueues a track', () => {
-    S.enqueue(track);
+    S.enqueue(testTrack);
     expect(S.queue).toBeTruthy();
   });
 
   it('dequeues a track', () => {
-    S.queue.push(track);
+    S.queue.push(testTrack);
     let track = S.dequeue();
     expect(track).toBeTruthy();
   });
 
   it('pushes previous tracks onto stack', () => {
-    S.pushToPrevious(track);
+    S.pushToPrevious(testTrack);
     expect(S.previousTracks).toBeTruthy();
   });
 
@@ -85,5 +90,55 @@ describe('StreamCloud', () => {
     expect(S.appContainer.style.justifyContent).toBe('center');
     expect(S.queueShowing).toBeFalsy();
     expect(S.currentScreen).toBe('search');
+  });
+
+  it('toggle the queue view', () => {
+    S.queue = [];
+    S.queue.push(testTrack);
+    S.toggleQueueContainer();
+    expect(S.queueContainer.innerHTML).toBeTruthy();
+    S.toggleQueueContainer();
+    expect(S.queueContainer.style.display).toBe('none');
+
+  });
+
+  it('toggles player controls', () => {
+    S.toggleControls(true);
+    expect(S.playerContainer.innerHTML).toBeTruthy();
+    S.toggleControls(false);
+    expect(S.playerContainer.innerHTML).toBeFalsy();
+  });
+
+  it('starts a player', () => {
+    let player = S.startPlayer('test');
+    expect(player).toBeTruthy();
+  });
+
+  it('streams a track', async () => {
+    S.currentPlayer = null;
+    S.playerContainer.innerHTML = '';
+
+    // Will log warning about not being able to stream from SC.
+    await S.immediateStream(realTrack);
+    expect(S.currentPlayer).toBeTruthy();
+    expect(S.currentTrack).toBe(realTrack);
+    expect(S.playerContainer.innerHTML).toBeTruthy();
+  });
+
+  it('skips a track', () => {
+    S.queue.push(realTrack);
+    S.currentTrack = testTrack;
+    S.skipTrack();
+
+    expect(S.previousTracks.includes(testTrack)).toBeTruthy();
+  });
+
+  it('back tracks', () => {
+    S.currentTrack = realTrack;
+    S.queue = [];
+    S.backTrack();
+
+    expect(S.queue[0]).toBe(S.currentTrack);
+
   });
 });

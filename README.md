@@ -1,5 +1,4 @@
 # StreamCloud
-#### SoundCloud Internship Code Challenge 2017
 
 StreamCloud is a small SoundCloud clone that allows the user to stream and queue up tracks from SoundCloud. The goal of this project was to explore and demonstrate the ability of SoundCloud's API with modern, framework-less JavaScript.
 
@@ -49,15 +48,11 @@ One of the toughest problems to tackle while building this application was writi
 ```JavaScript
 async stream(track) {
   if (!this.playing) {
-    this.playing = true;
-    let player = await this.startPlayer(track);
-    this.currentPlayer = player;
-    player.play();
-    this.toggleControls(true);
+    await this.immediateStream(track);
 
-    player.on('finish', () => {
-      this.playing = false;
+    this.currentPlayer.on('finish', () => {
       this.toggleControls(false);
+      this.pushToPrevious(track);
       if (this.queue.length > 0) {
         let nextTrack = this.dequeue();
         this.stream(nextTrack);
@@ -72,7 +67,10 @@ async stream(track) {
 
 ### Architecture
 
-Being a small enough project (and a demonstration of technical ability), I decided to not use a front-end framework and relied mainly on the newer features of ECMAScript alongside webpack to create a modular front-end. Experience working with React allowed me to model the front-end in a way that allows for reusable components. It is by no means as elegant as if I were to use a framework, however it gets the job done without many issues. For future improvements, I would most likely end up rewriting the application using React to make state management a lot easier throughout.
+Being a small enough project (and a demonstration of technical ability), I decided to not use a front-end framework and relied mainly on the newer features of ECMAScript alongside webpack to create a modular front-end. Experience working with React allowed me to model the front-end in a way that allows for reusable components.
+
+
+Without relying on a framework, directly handling how state changes throughout the app reflect in the UX/UI and vice versa poised to be a bit cumbersome. For future improvements, I would most likely end up rewriting the application using React to make state management a lot cleaner throughout.
 
 ## Future Improvements
 
