@@ -44,7 +44,7 @@ yarn test
 
 ### Asynchronous Requests
 
-One of the toughest problems to tackle while building this application was writing a streaming algorithm that could work asynchronously with a queue. In order to properly account for the asynchrony of user requests and the SoundCloud player streaming tracks, edge cases involving the player and its 'finish' event listener had to be implemented. This includes the ability to enqueue a track if the player is currently streaming and not allowing duplicate tracks in the queue to avoid uncaught promise errors with the player (this can be changed in the future). A recursive descent is made when the current player is finished playing, which allows a new player to be used for the next track, avoiding some promise interruption errors.
+One of the toughest problems to tackle while building this application was writing a streaming algorithm that could work asynchronously with a queue. In order to properly account for the asynchrony of user requests and the SoundCloud player streaming tracks, edge cases involving the player and its 'finish' event listener had to be implemented. This includes the ability to enqueue a track if the player is currently streaming and not allowing duplicate tracks in the queue to avoid uncaught promise errors with the player (this can be changed in the future). A recursive descent is made when the current player is finished playing, which allows a new player to be used for the next track.
 ```JavaScript
 async stream(track) {
   if (!this.playing) {
@@ -72,6 +72,40 @@ async immediateStream(track) {
   this.trackTitle.textContent = track.title;
   this.toggleControls(true);
   this.togglePlayState(true);
+}
+```
+
+### Data Structures
+
+Another interesting challenge that I encountered while building the functionality of the media player was constructing the way the tracks and queue are handled when the skip track or back track buttons are pressed. In order to make the track queue work alongside the ability to skip forward and backward, I used a Queue structure for the queue (FIFO) and Stack implementation for the previously played tracks (LIFO). This allowed me to (when the back track button is pressed) pop a track off the the previous track stack and play it, and insert the previously playing track into the beginning of the queue to be played next. When the skip forward button is pressed, I push the current track to the previous track stack and dequeue the next track to be played. There are probably other ways to implement this feature, but this implementation seemed intuitive at the time.
+
+```JavaScript
+skipTrack() {
+  if (this.queue.length > 0) {
+    this.currentPlayer.seek(0);
+    this.togglePlayState(false);
+    this.pushToPrevious(this.currentTrack);
+    let nextTrack = this.dequeue();
+    this.stream(nextTrack);
+  }
+}
+
+backTrack() {
+  let prevTrack = this.previousTracks.pop();
+  if (!!prevTrack) {
+    this.currentPlayer.seek(0);
+    this.togglePlayState(false);
+    this.queue.unshift(this.currentTrack);
+    this.stream(prevTrack);
+  }
+}
+
+pushToPrevious(track) {
+  if (this.previousTracks.length < 30) this.previousTracks.push(track);
+  else {
+    this.previousTracks.shift();
+    this.previousTracks.push(track);
+  }
 }
 ```
 

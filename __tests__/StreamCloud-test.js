@@ -4,25 +4,30 @@ describe('StreamCloud', () => {
   // Initial, unmodified body.
   document.body.innerHTML =
   `
-    <div id="appContainer">
-      <div class="bar-row">
-        <i class="material-icons md-48" id="back">swap_horiz</i>
-        <i class="material-icons md-48" id="queue">list</i>
-      </div>
-      <div id="queueContainer">
-      </div>
-      <div id="titleContainer">
-        <h1>Stream<strong>Cloud</strong></h1>
-      </div>
-      <div id="searchContainer">
-        <input id="searchBox" type="text" name="track" placeholder="Search for tracks">
-        <input id="submitSearch" type="submit" value="Search">
-      </div>
-      <div id="trackContainer">
-      </div>
-      <div id="playerContainer">
-      </div>
+  <div id="appContainer">
+    <div class="bar-row">
+      <i class="material-icons md-48" id="back">swap_horiz</i>
+      <h2 id="trackTitle"></h2>
+      <i class="material-icons md-48" id="queue">list</i>
     </div>
+    <div id="queueContainer">
+    </div>
+    <div id="titleContainer">
+      <h1>Stream<strong>Cloud</strong></h1>
+    </div>
+    <div id="searchContainer">
+      <input id="searchBox" type="text" name="track" placeholder="Search for tracks">
+      <input id="submitSearch" type="submit" value="Search">
+    </div>
+    <div id="trackContainer">
+    </div>
+    <div id="playerContainer">
+      <i id="backTrack" class="material-icons md-48">fast_rewind</i>
+      <i id="playButton" class="material-icons md-48">play_arrow</i>
+      <i id="pauseButton" class="material-icons md-48">pause</i>
+      <i id="skipTrack" class="material-icons md-48">fast_forward</i>
+    </div>
+  </div>
   `
 
   const testTrack = {
@@ -104,9 +109,9 @@ describe('StreamCloud', () => {
 
   it('toggles player controls', () => {
     S.toggleControls(true);
-    expect(S.playerContainer.innerHTML).toBeTruthy();
+    expect(S.playerContainer.style.display).not.toBe('none');
     S.toggleControls(false);
-    expect(S.playerContainer.innerHTML).toBeFalsy();
+    expect(S.playerContainer.style.display).toBe('none');
   });
 
   it('starts a player', () => {
@@ -116,14 +121,13 @@ describe('StreamCloud', () => {
 
   it('streams a track', async () => {
     S.currentPlayer = null;
-    S.playerContainer.innerHTML = '';
 
     // Will log warning about not being able to stream from SC.
     // Request could probably be mocked for speed.
     await S.immediateStream(realTrack);
     expect(S.currentPlayer).toBeTruthy();
     expect(S.currentTrack).toBe(realTrack);
-    expect(S.playerContainer.innerHTML).toBeTruthy();
+    expect(S.playerContainer.innerHTML).not.toBe('none');
   });
 
   it('skips a track', () => {
