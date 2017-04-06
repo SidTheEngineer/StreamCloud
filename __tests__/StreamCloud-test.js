@@ -119,6 +119,7 @@ describe('StreamCloud', () => {
     S.playerContainer.innerHTML = '';
 
     // Will log warning about not being able to stream from SC.
+    // Request could probably be mocked for speed.
     await S.immediateStream(realTrack);
     expect(S.currentPlayer).toBeTruthy();
     expect(S.currentTrack).toBe(realTrack);

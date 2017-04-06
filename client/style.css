@@ -124,8 +124,16 @@ h2, h3 { font-size: 10pt; }
   background-color: rgb(25, 25, 25);
 }
 
+#trackTitle {
+  width: 60%;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  text-align: center;
+}
+
 #playerContainer {
-  display: flex;
+  display: none;
   position: fixed;
   flex-direction: row;
   justify-content: space-around;

@@ -1,11 +1,10 @@
+import SC           from 'soundcloud';
+import { autobind } from 'core-decorators';
+
 import config     from '../config.json';
 import TrackItem  from './components/TrackItem';
 import QueueItem  from './components/QueueItem';
 import Notice     from './components/Notice';
-import Controls   from './components/Controls';
-
-import SC           from 'soundcloud';
-import { autobind } from 'core-decorators';
 
 @autobind
 class StreamCloud {
@@ -21,6 +20,7 @@ class StreamCloud {
     this.playerContainer = document.getElementById('playerContainer');
     this.playButton      = document.getElementById('playButton');
     this.pauseButton     = document.getElementById('pauseButton');
+    this.trackTitle      = document.getElementById('trackTitle');
 
     // Default state
     this.currentScreen  = 'search';
@@ -31,47 +31,15 @@ class StreamCloud {
     this.currentTrack   = null;
 
     // Listeners
-    this.appContainer.onclick = (e) => {
-      switch (e.target.id) {
-        case 'enqueue':
-          this.stream(e.target.dataset);
-          e.stopPropagation();
-          break;
-        case 'back':
-          window.history.back();
-          e.stopPropagation();
-          break;
-        case 'queue':
-          this.toggleQueueContainer();
-          e.stopPropagation();
-          break;
-        case 'pauseButton':
-          this.togglePlayState(false);
-          e.stopPropagation();
-          break;
-        case 'playButton':
-          this.togglePlayState(true);
-          e.stopPropagation();
-          break;
-        case 'skipTrack':
-          this.skipTrack();
-          e.stopPropagation();
-          break;
-        case 'backTrack':
-          this.backTrack();
-          e.stopPropagation();
-      }
-    }
+    this.submitSearch.onmousedown = (e) => this.fetchTracks(this.searchBox.value);
+    this.appContainer.onclick = (e) => this.handleButtonClick(e);
+    window.onpopstate = (e) => this.toggleScreen(this.currentScreen);
 
     // Allow enter key to submit
     this.searchBox.onkeydown = (e) => {
       if (e.which === 13 || e.which === 10)
         this.fetchTracks(e.target.value);
     }
-
-    this.submitSearch.onmousedown = (e) => this.fetchTracks(this.searchBox.value);
-
-    window.onpopstate = (e) => this.toggleScreen(this.currentScreen);
   }
 
   init() {
@@ -88,6 +56,7 @@ class StreamCloud {
 
   async fetchTracks(text) {
     this.appendNotice('Loading ...');
+    this.showTracks();
     try {
       SC.get('/tracks', { q: text }).then((tracks) => {
         if (tracks.length === 0) {
@@ -111,11 +80,11 @@ class StreamCloud {
 
   appendTracks(tracks) {
     let trackList = '';
-
     tracks.forEach((track) => {
       trackList += TrackItem(track);
     });
     this.trackContainer.innerHTML = trackList;
+
   }
 
   appendNotice(text) {
@@ -154,21 +123,23 @@ class StreamCloud {
       this.currentPlayer.on('finish', () => {
         this.toggleControls(false);
         this.pushToPrevious(track);
+        this.trackTitle.textContent = '';
         if (this.queue.length > 0) {
           let nextTrack = this.dequeue();
           this.stream(nextTrack);
         }
       });
     }
-    else if (this.playing && !this.queue.includes(track) && this.currentPlayer.options.soundId != track.id)
+    else if (!this.queue.includes(track) && this.currentPlayer.options.soundId != track.id)
       this.enqueue(track);
-    else alert(`${track.title} is already in the queue`);
+    else alert(`${track.title} is already in the player or queue`);
   }
 
   async immediateStream(track) {
     let player = await this.startPlayer(track);
     this.currentPlayer = player;
     this.currentTrack = track;
+    this.trackTitle.textContent = track.title;
     this.toggleControls(true);
     this.togglePlayState(true);
   }
@@ -261,7 +232,7 @@ class StreamCloud {
   }
 
   toggleControls(on) {
-    on ? this.playerContainer.innerHTML = Controls() : this.playerContainer.innerHTML = ``;
+    this.playerContainer.style.display = on ? 'flex' : 'none';
   }
 
   togglePlayState(play) {
@@ -286,6 +257,40 @@ class StreamCloud {
     else {
       this.showTracks();
       history.pushState({}, 'search', '/');
+    }
+  }
+
+  handleButtonClick(e) {
+    switch (e.target.id) {
+      case 'enqueue':
+        this.stream(e.target.dataset);
+        break;
+      case 'back':
+        window.history.back();
+        break;
+      case 'queue':
+        this.toggleQueueContainer();
+        break;
+      case 'pauseButton':
+        this.togglePlayState(false);
+        break;
+      case 'playButton':
+        this.togglePlayState(true);
+        break;
+      case 'skipTrack':
+        this.skipTrack();
+        break;
+      case 'backTrack':
+        this.backTrack();
+        break;
+    }
+
+    if (e.target.className === 'track-text' || e.target.className === 'track-text username') {
+      if (this.currentPlayer) {
+        this.currentPlayer.seek(0);
+        this.togglePlayState(false);
+      }
+      this.stream(e.target.dataset);
     }
   }
 }

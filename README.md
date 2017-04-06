@@ -59,9 +59,9 @@ async stream(track) {
       }
     });
   }
-  else if (this.playing && !this.queue.includes(track) && this.currentPlayer.options.soundId != track.id)
+  else if (!this.queue.includes(track) && this.currentPlayer.options.soundId != track.id)
     this.enqueue(track);
-  else alert(`${track.title} is already in the queue`);
+  else alert(`${track.title} is already in the player or queue`);
 }
 
 async immediateStream(track) {
