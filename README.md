@@ -75,9 +75,7 @@ async immediateStream(track) {
 
 ### Google Chrome Player Bug
 
-Due to upcoming school exams and time constraints, I was not able to pinpoint an odd bug that occurs with the player in Chrome before my submission.
-
-If the SoundCloud player sees the same track (i.e. skip to the next track then go back to the previous one), two pause events are fired, yet the track will continue to play. This throws the playing state out of sync with the player. In order to pause the player, the play/pause button will need to be toggled a couple times.
+If the SoundCloud player sees the same track again (i.e. skip to the next track then go back to the previous one), two pause events are fired, yet the track will continue to play. This throws the playing state out of sync with the player. In order to pause the player, the play/pause button will need to be toggled a couple times.
 
 In order to fix this I had to do something a little hacky for the time being. When the play/pause button is pressed, it will play-pause-play or pause-play-pause:
 
@@ -129,6 +127,3 @@ The beauty behind writing some "vanilla" JS is that one starts to appreciate and
 ### Better Searching
 
 While building the project I started to realize my focus shifted from the original idea of creating different ways to filter searches to building out a little media player. This has left the searching capability pretty rudimentary. I would definitely consider adding searching filters (genre, likes, plays) in the future.
-
-----
-Overall, I thoroughly enjoyed building this little project and working with the SoundCloud API. I think this is an excellent way of allowing potential job candidates to demonstrate their technical ability, and should be more of a norm if it isn't already.
