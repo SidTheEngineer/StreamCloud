@@ -53,6 +53,7 @@ async stream(track) {
     this.currentPlayer.on('finish', () => {
       this.toggleControls(false);
       this.pushToPrevious(track);
+      this.trackTitle.textContent = '';
       if (this.queue.length > 0) {
         let nextTrack = this.dequeue();
         this.stream(nextTrack);
@@ -68,6 +69,7 @@ async immediateStream(track) {
   let player = await this.startPlayer(track);
   this.currentPlayer = player;
   this.currentTrack = track;
+  this.trackTitle.textContent = track.title;
   this.toggleControls(true);
   this.togglePlayState(true);
 }
