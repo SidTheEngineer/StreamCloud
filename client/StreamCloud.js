@@ -266,7 +266,7 @@ class StreamCloud {
         this.stream(e.target.dataset);
         break;
       case 'back':
-        window.history.back();
+        this.toggleScreen(this.currentScreen);
         break;
       case 'queue':
         this.toggleQueueContainer();
