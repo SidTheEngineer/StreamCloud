@@ -3,9 +3,9 @@
 StreamCloud is a small SoundCloud clone that allows the user to stream and queue up tracks from SoundCloud. The goal of this project was to explore and demonstrate the ability of SoundCloud's API with modern, framework-less JavaScript.
 
 <div align="center">
-  <img src="./screenshot-home.png" height=400 />
-  <img src="./screenshot-tracks.png" height=400 />
-  <img src="./screenshot-queue.png" height=400 />
+  <img src="./screenshots/screenshot-home.png" height=400 />
+  <img src="./screenshots/screenshot-tracks.png" height=400 />
+  <img src="./screenshots/screenshot-queue.png" height=400 />
 </div>
 
 
@@ -40,11 +40,23 @@ Facebook's [Jest](https://github.com/facebook/jest) framework is used for unit t
 yarn test
 ```
 
+## How To
+
+You can begin by searching for a track on the home screen. To start streaming the track, simply click on it.
+
+To queue up tracks, which will allow you to skip to it and back track to it, click the <img height=20 src="./screenshots/screenshot-add-to-queue.png" /> button.
+
+If a song is currently playing, this button will add the song to your queue, otherwise, it will start playing.
+
+To see your current queue, click the <img height=20 src="./screenshots/screenshot-view-queue.png" /> button
+
+You can switch between the search and the tracks screen by pressing the <img height=20 src="./screenshots/screenshot-switch-screen.png" /> button, or by using back/forward in a browser.
+
 ## Challenges
 
 ### Asynchronous Requests
 
-One of the toughest problems to tackle while building this application was writing a streaming algorithm that could work asynchronously with a queue. In order to properly account for the asynchrony of user requests and the SoundCloud player streaming tracks, edge cases involving the player and its 'finish' event listener had to be implemented. This includes the ability to enqueue a track if the player is currently streaming and not allowing duplicate tracks in the queue to avoid uncaught promise errors with the player (this can be changed in the future). A recursive descent is made when the current player is finished playing, which allows a new player to be used for the next track.
+One of the toughest problems to tackle while building this application was writing a streaming algorithm that could work asynchronously with a queue. In order to properly account for the asynchrony of user requests and the SoundCloud player streaming tracks, edge cases involving the player and its 'finish' event listener had to be implemented. This includes the ability to enqueue a track if the player is currently streaming and not allowing duplicate tracks in the queue to avoid uncaught promise errors with the player (this can be changed in the future). A recursive call is made when the current player is finished playing to stream the next track if the queue isn't empty.
 ```JavaScript
 async stream(track) {
   if (!this.playing) {
@@ -52,6 +64,7 @@ async stream(track) {
 
     this.currentPlayer.on('finish', () => {
       this.toggleControls(false);
+      this.togglePlayState(false);
       this.pushToPrevious(track);
       this.trackTitle.textContent = '';
       if (this.queue.length > 0) {
@@ -77,7 +90,7 @@ async immediateStream(track) {
 
 ### Data Structures
 
-Another interesting challenge that I encountered while building the functionality of the media player was constructing the way the tracks and queue are handled when the skip track or back track buttons are pressed. In order to make the track queue work alongside the ability to skip forward and backward, I used a Queue structure for the queue (FIFO) and Stack implementation for the previously played tracks (LIFO). This allowed me to (when the back track button is pressed) pop a track off the the previous track stack and play it, and insert the previously playing track into the beginning of the queue to be played next. When the skip forward button is pressed, I push the current track to the previous track stack and dequeue the next track to be played. There are probably other ways to implement this feature, but this implementation seemed intuitive at the time.
+Another interesting challenge that I encountered while building the functionality of the media player was constructing the way the tracks and queue are handled when the skip track or back track buttons are pressed. In order to make the track queue work alongside the ability to skip forward and backward, I used a Queue structure for the queue (FIFO) and Stack implementation for the previously played tracks (LIFO). This allowed me to (when the back track button is pressed) pop a track off the the previous track stack and play it, and insert the previously playing track into the beginning of the queue to be played next. When the skip forward button is pressed, I push the current track to the previous track stack and dequeue the next track to be played. This could have probably been implemented with a single array but I thought it would be fun to implement some data structure knowledge in the process, keeping the previous tracks and next tracks separate.
 
 ```JavaScript
 skipTrack() {
@@ -92,7 +105,7 @@ skipTrack() {
 
 backTrack() {
   let prevTrack = this.previousTracks.pop();
-  if (!!prevTrack) {
+  if (prevTrack) {
     this.currentPlayer.seek(0);
     this.togglePlayState(false);
     this.queue.unshift(this.currentTrack);
@@ -137,12 +150,11 @@ Unfortunately, this throws an error whenever a track is paused:
 Uncaught (in promise) DOMException: The play() request was interrupted by a call to pause().
 ```
 
-It doesn't seem to cause any issues, but it's definitely something worth investigating. When testing in Firefox, the error is not thrown.
+It doesn't seem to cause any issues, but it's definitely something worth investigating. When testing the app in Firefox, this error is not thrown.
 
 ### Architecture
 
 Being a small enough project (and a demonstration of technical ability), I decided to not use a front-end framework and relied mainly on the newer features of ECMAScript alongside webpack to create a modular front-end. Experience working with React allowed me to model the front-end in a way that allows for reusable components.
-
 
 Without relying on a framework, directly handling how state changes throughout the app reflect in the UX/UI and vice versa poised to be a bit cumbersome. For future improvements, I would most likely end up rewriting the application using React to make state management a lot cleaner throughout.
 
